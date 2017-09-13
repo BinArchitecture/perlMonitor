@@ -1,0 +1,18 @@
+#!/bin/bash
+./fetchJobLock.pl
+id=$?
+./saveJobLogSpark.pl "yarn-cluster 1 2 3 ../ff.yaml" 0 1
+echo "execing spark task..."
+sleep 5
+echo "lockid is:"$id
+./releaseJobLock.pl $id
+
+starttime=`date +%Y-%m-%d" "%H:%M:%S`
+echo "doing some shell task or shell task"
+sleep 5
+endtime=`date +%Y-%m-%d" "%H:%M:%S`
+tmplogName=$(echo "logbiz_"`date +%Y%m%d%H%M%S`".log")
+cp -a log_biz.log $tmplogName
+hadoop fs -put $tmplogName /var/logbiz/
+rm -rf $tmplogName
+./saveJobLogMax.pl "/var/logbiz/$tmplogName" "shell params" 0 "$starttime" "$endtime" 3
